@@ -36,9 +36,9 @@ module URI
     COMPOSITE_MODEL_ID_MAX_SIZE = 20
     COMPOSITE_MODEL_ID_DELIMITER = "/"
 
-    URI_PARSER = URI::RFC2396_Parser.new # :nodoc:
-
     class << self
+      attr_accessor :parser
+
       # Validates +app+'s as URI hostnames containing only alphanumeric characters
       # and hyphens. An ArgumentError is raised if +app+ is invalid.
       #
@@ -64,7 +64,7 @@ module URI
       #   URI.parse('gid://bcx')       # => URI::GID instance
       #   URI::GID.parse('gid://bcx/') # => raises URI::InvalidComponentError
       def parse(uri)
-        generic_components = URI.split(uri) << URI_PARSER << true # RFC2396 parser, true arg_check
+        generic_components = URI.split(uri) << parser  << true # RFC2396 parser, true arg_check
         new(*generic_components)
       end
 
@@ -100,6 +100,8 @@ module URI
         super parts
       end
     end
+
+    self.parser = URI::RFC2396_Parser.new
 
     def to_s
       # Implement #to_s to avoid no implicit conversion of nil into string when path is nil

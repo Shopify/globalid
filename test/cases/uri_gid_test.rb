@@ -8,6 +8,22 @@ class URI::GIDTest <  ActiveSupport::TestCase
     @cpk_gid = URI::GID.parse(@cpk_gid_string)
   end
 
+  test 'parser is RFC2396 by default' do
+    default_parser = URI::GID.parser
+
+    assert_instance_of(URI::RFC2396_Parser, default_parser)
+  end
+
+  test 'parser is comnfigurable' do
+    old_parser = URI::GID.parser
+
+    URI::GID.parser = URI::RFC3986_Parser.new
+
+    assert URI::GID.parse("gid://my_app/Model/123")
+  ensure
+    URI::GID.parser = old_parser
+  end
+
   test 'parsed' do
     assert_equal @gid.app, 'bcx'
     assert_equal @gid.model_name, 'Person'
